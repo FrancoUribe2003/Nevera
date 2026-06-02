@@ -1,0 +1,6 @@
+{
+  "python.terminal.activateEnvInCurrentTerminal": true,
+  "python.terminal.activateEnvironment": true,
+  "python.envFile": "${workspaceFolder}/backend/venv/.env",
+  "python.terminal.useEnvFile": true
+}
