@@ -10,6 +10,7 @@ backend/.env
 frontend/node_modules/
 frontend/dist/
 frontend/.env
+backend/node_modules/
 
 # Cursor
 .cursor/
@@ -20,3 +21,5 @@ frontend/.env
 # Sistema
 .DS_Store
 Thumbs.db
+
+.env*
