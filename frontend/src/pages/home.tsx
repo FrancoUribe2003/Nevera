@@ -111,65 +111,62 @@ export default function Home() {
     }
   };
 
-
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', fontFamily: 'sans-serif' }}>
-      <h1>Buscar Recetas 🍳</h1>
+    <div>
+      <h1>Buscar Recetas</h1>
       
-      <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
-        <button 
-          onClick={() => cambiarModo('PLAN')}
-          style={{ padding: '0.5rem 1rem', background: modo === 'PLAN' ? '#333' : '#eee', color: modo === 'PLAN' ? 'white' : 'black', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-        >
-          Armar Menú (Tengo ingredientes)
-        </button>
-        <button 
-          onClick={() => cambiarModo('RECETA')}
-          style={{ padding: '0.5rem 1rem', background: modo === 'RECETA' ? '#333' : '#eee', color: modo === 'RECETA' ? 'white' : 'black', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-        >
-          Consultar Receta (Quiero cocinar algo)
-        </button>
-      </div>
-      
-      <form onSubmit={handleSubmit} style={{ marginBottom: '2rem', padding: '1rem', border: '1px solid #ccc', borderRadius: '8px' }}>
-        <div style={{ marginBottom: '1rem' }}>
-          <label>{modo === 'PLAN' ? 'Ingredientes que tienes:' : '¿Qué platillos quieres preparar?:'}</label>
-          <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+      <form onSubmit={handleSubmit} className="card">
+        <div className="form-group">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+            <label className="form-label" style={{ marginBottom: 0 }}>
+              {modo === 'PLAN' ? 'Ingredientes que tienes:' : '¿Qué platillos quieres preparar?:'}
+            </label>
+            <button 
+              type="button"
+              onClick={() => cambiarModo(modo === 'PLAN' ? 'RECETA' : 'PLAN')}
+              className="btn btn-mini btn-outline-info"
+              style={{ fontSize: '0.85rem', padding: '0.35rem 0.75rem' }}
+            >
+              {modo === 'PLAN' ? 'Consultar Receta' : 'Armar Menú'}
+            </button>
+          </div>
+          <div className="input-wrapper">
             <input 
               type="text" 
               value={itemsInput}
               onChange={(e) => setItemsInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), agregarItem())}
               placeholder={modo === 'PLAN' ? "Ej: pollo, arroz..." : "Ej: Milanesa con puré..."}
-              style={{ padding: '0.5rem', flex: 1 }}
+              className="input-text"
             />
-            <button type="button" onClick={agregarItem} style={{ padding: '0.5rem 1rem' }}>Agregar</button>
+            <button type="button" onClick={agregarItem} className="btn btn-outline">Agregar</button>
           </div>
           
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '1rem' }}>
+          <div className="tag-container">
             {items.map(item => (
-              <span key={item} style={{ background: '#eee', padding: '0.3rem 0.6rem', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                {item} <button type="button" onClick={() => eliminarItem(item)} style={{ cursor: 'pointer', border: 'none', background: 'transparent', color: 'red' }}>x</button>
+              <span key={item} className="tag-badge">
+                {item} 
+                <button type="button" onClick={() => eliminarItem(item)} className="tag-delete-btn">✕</button>
               </span>
             ))}
           </div>
         </div>
 
         {modo === 'PLAN' && (
-          <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
-            <div>
-              <label>Personas: </label>
-              <input type="number" min="1" value={personas} onChange={(e) => setPersonas(Number(e.target.value))} style={{ padding: '0.5rem', width: '60px' }} />
+          <div className="input-number-group">
+            <div className="input-number-wrapper">
+              <label className="form-label" style={{ marginBottom: 0 }}>Personas: </label>
+              <input type="number" min="1" value={personas} onChange={(e) => setPersonas(Number(e.target.value))} className="input-number" />
             </div>
-            <div>
-              <label>Días / Opciones (1-7): </label>
-              <input type="number" min="1" max="7" value={dias} onChange={(e) => setDias(Number(e.target.value))} style={{ padding: '0.5rem', width: '60px' }} />
+            <div className="input-number-wrapper">
+              <label className="form-label" style={{ marginBottom: 0 }}>Días / Opciones (1-7): </label>
+              <input type="number" min="1" max="7" value={dias} onChange={(e) => setDias(Number(e.target.value))} className="input-number" />
             </div>
           </div>
         )}
 
         <div style={{ display: 'flex', gap: '1rem' }}>
-          <button type="submit" disabled={loading} style={{ padding: '0.75rem 1.5rem', background: '#4CAF50', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', flex: 1 }}>
+          <button type="submit" disabled={loading} className="btn btn-primary" style={{ flex: 1 }}>
             {loading ? 'Pensando...' : (modo === 'PLAN' ? 'Generar Plan' : 'Ver Ingredientes y Pasos')}
           </button>
           
@@ -178,62 +175,69 @@ export default function Home() {
               type="button" 
               onClick={handleSorpresa}
               disabled={loading} 
-              style={{ padding: '0.75rem 1.5rem', background: '#9c27b0', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+              className="btn btn-secondary"
             >
-              ✨ Sorpréndeme
+              Sorpréndeme
             </button>
           )}
         </div>
-        {error && <p style={{ color: 'red', marginTop: '1rem' }}>{error}</p>}
+        {error && <p className="error-text">{error}</p>}
       </form>
 
       {/* RESULTADO MODO: PLAN SEMANAL */}
       {plan && modo === 'PLAN' && (
         <div>
-          <h2>Opciones de Menú:</h2>
+          <h2>Opciones de Menú</h2>
           {plan.plan.map((receta, index) => {
             const isSaved = estaGuardada(receta.nombre);
 
             return (
-              <div key={index} style={{ border: '1px solid #ddd', padding: '1rem', borderRadius: '8px', marginBottom: '1rem', position: 'relative' }}>
+              <div key={index} className="card" style={{ position: 'relative' }}>
                 {receta.economica && (
-                  <span style={{ position: 'absolute', top: 10, right: 10, background: '#4CAF50', color: 'white', padding: '2px 8px', borderRadius: '12px', fontSize: '12px' }}>Económica</span>
+                  <span className="badge badge-mint" style={{ position: 'absolute', top: '1.25rem', right: '1.25rem' }}>Económica</span>
                 )}
                 
-                <h3 style={{ marginTop: 0 }}>{receta.dia && `${receta.dia}: `}{receta.nombre} ⏱️ {receta.tiempo_minutos} min</h3>
+                <div className="recipe-header">
+                  <h3 className="recipe-title">
+                    {receta.dia && `${receta.dia}: `}{receta.nombre} 
+                    <span className="recipe-meta-text"> - {receta.tiempo_minutos} min</span>
+                  </h3>
+                </div>
                 
-                <button 
-                  onClick={() => isSaved ? eliminarReceta(receta.nombre) : guardarReceta(receta)}
-                  style={{ marginBottom: '1rem', padding: '0.4rem 0.8rem', background: isSaved ? '#f44336' : '#2196F3', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-                >
-                  {isSaved ? 'Quitar de guardadas' : '⭐ Guardar receta'}
-                </button>
+                <div className="recipe-actions">
+                  <button 
+                    onClick={() => isSaved ? eliminarReceta(receta.nombre) : guardarReceta(receta)}
+                    className={`btn btn-mini ${isSaved ? 'btn-outline-danger' : 'btn-outline-info'}`}
+                  >
+                    {isSaved ? 'Quitar de guardadas' : 'Guardar receta'}
+                  </button>
+                </div>
 
                 <div style={{ marginBottom: '1rem' }}>
-                  <strong>Usa: </strong><br/>
-                  <ul style={{ paddingLeft: '1.2rem', margin: '0.5rem 0' }}>
+                  <strong>Usa: </strong>
+                  <ul style={{ marginTop: '0.25rem' }}>
                     {receta.ingredientes_usados.map((ing, i) => <li key={i}>{ing}</li>)}
                   </ul>
                 </div>
 
                 {receta.ingredientes_faltantes.length > 0 && (
                   <div style={{ marginBottom: '1rem' }}>
-                    <strong>Falta comprar: </strong>
-                    <button 
-                      onClick={() => setEdicionReceta(edicionReceta?.index === index ? null : { index, excluidos: [] })}
-                      style={{ marginLeft: '1rem', padding: '0.2rem 0.5rem', fontSize: '0.8rem', cursor: 'pointer' }}
-                    >
-                      ✏️ Modificar
-                    </button>
-                    <br/>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                      <strong>Falta comprar:</strong>
+                      <button 
+                        onClick={() => setEdicionReceta(edicionReceta?.index === index ? null : { index, excluidos: [] })}
+                        className="btn btn-mini btn-outline"
+                      >
+                        Modificar
+                      </button>
+                    </div>
                     
-                    <ul style={{ paddingLeft: '1.2rem', marginTop: '0.5rem' }}>
+                    <ul style={{ marginTop: '0.5rem' }}>
                       {receta.ingredientes_faltantes.map((ing, i) => {
-                        // Checamos si el usuario tachó este ingrediente
                         const estaExcluido = edicionReceta?.index === index && edicionReceta.excluidos.includes(ing);
                         
                         return (
-                          <li key={i} style={{ textDecoration: estaExcluido ? 'line-through' : 'none', color: estaExcluido ? '#aaa' : 'inherit' }}>
+                          <li key={i} style={{ textDecoration: estaExcluido ? 'line-through' : 'none', color: estaExcluido ? 'var(--text-secondary)' : 'inherit' }}>
                             {ing} 
                             {edicionReceta?.index === index && (
                               <button 
@@ -244,9 +248,9 @@ export default function Home() {
                                     setEdicionReceta({ index, excluidos: [...edicionReceta.excluidos, ing] });
                                   }
                                 }}
-                                style={{ marginLeft: '0.5rem', cursor: 'pointer', border: 'none', background: 'transparent' }}
+                                style={{ marginLeft: '0.5rem', cursor: 'pointer', border: 'none', background: 'transparent', color: estaExcluido ? 'var(--accent-mint)' : 'var(--accent-coral)', fontWeight: 'bold' }}
                               >
-                                {estaExcluido ? '↩️' : '❌'}
+                                {estaExcluido ? '＋' : '✕'}
                               </button>
                             )}
                           </li>
@@ -258,7 +262,8 @@ export default function Home() {
                     {edicionReceta?.index === index && edicionReceta.excluidos.length > 0 && (
                       <button 
                         onClick={() => handleReemplazarMultiples(receta, index, edicionReceta.excluidos)}
-                        style={{ padding: '0.5rem 1rem', background: '#9c27b0', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', marginTop: '0.5rem' }}
+                        className="btn btn-secondary"
+                        style={{ marginTop: '0.75rem' }}
                         disabled={loading}
                       >
                         {loading ? 'Pensando...' : `Generar alternativa sin ${edicionReceta.excluidos.length} ingredientes`}
@@ -277,15 +282,20 @@ export default function Home() {
 
       {/* RESULTADO MODO: CONSULTAR RECETA */}
       {recetaInfo && modo === 'RECETA' && (
-        <div style={{ borderTop: '2px dashed #ddd', paddingTop: '2rem', marginTop: '2rem' }}>
-          <h2>Detalles de la Receta:</h2>
+        <div style={{ borderTop: '1px dashed var(--border-color)', paddingTop: '2rem', marginTop: '2rem' }}>
+          <h2>Detalles de la Receta</h2>
           {recetaInfo.recetas_pedidas.map((receta, index) => (
-            <div key={index} style={{ border: '1px solid #ddd', padding: '1rem', borderRadius: '8px', marginBottom: '1rem' }}>
-              <h3 style={{ marginTop: 0 }}>{receta.nombre} ⏱️ {receta.tiempo_minutos} min</h3>
+            <div key={index} className="card" style={{ position: 'relative' }}>
+              <div className="recipe-header">
+                <h3 className="recipe-title">
+                  {receta.nombre} 
+                  <span className="recipe-meta-text"> - {receta.tiempo_minutos} min</span>
+                </h3>
+              </div>
               
               <div style={{ marginBottom: '1rem' }}>
-                <strong>Ingredientes: </strong>
-                <ul style={{ paddingLeft: '1.2rem', margin: '0.5rem 0' }}>
+                <strong>Ingredientes:</strong>
+                <ul style={{ marginTop: '0.25rem' }}>
                   {receta.ingredientes?.map((ing, i) => <li key={i}>{ing}</li>)}
                 </ul>
               </div>

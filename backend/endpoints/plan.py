@@ -161,7 +161,6 @@ def generar_sorpresa(request: SorpresaRequest):
     {{
       "plan": [
         {{
-          "dia": "Sorpresa de hoy",
           "nombre": "Nombre del plato creativo",
           "economica": true,
           "ingredientes_usados": ["ingrediente1", "ingrediente2"],
