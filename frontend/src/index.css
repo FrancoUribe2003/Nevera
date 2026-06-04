@@ -470,6 +470,133 @@ li strong {
   flex-wrap: wrap;
 }
 
+/* Botón guardar / eliminar — ícono en esquina superior derecha */
+.recipe-save-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-main);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+  padding: 0;
+  z-index: 1;
+}
+
+.recipe-save-btn:hover {
+  color: var(--accent-sky);
+  border-color: var(--accent-sky);
+  background: rgba(77, 150, 255, 0.08);
+  transform: translateY(-1px);
+}
+
+.recipe-save-btn.saved {
+  color: var(--accent-coral);
+  border-color: rgba(255, 107, 107, 0.35);
+  background: rgba(255, 107, 107, 0.08);
+}
+
+.recipe-save-btn.saved:hover {
+  color: #ff5252;
+  border-color: var(--accent-coral);
+  background: rgba(255, 107, 107, 0.15);
+  transform: translateY(-1px);
+}
+
+/* Chips de ingredientes horizontales */
+.ingredient-section {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.ingredient-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  padding-top: 0.2rem;
+  flex-shrink: 0;
+}
+
+.ingredient-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.ingredient-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.18rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  transition: var(--transition);
+  border: 1px solid transparent;
+}
+
+.chip-green {
+  background: rgba(107, 203, 119, 0.1);
+  color: var(--accent-mint);
+  border-color: rgba(107, 203, 119, 0.2);
+}
+
+.chip-coral {
+  background: rgba(255, 107, 107, 0.1);
+  color: var(--accent-coral);
+  border-color: rgba(255, 107, 107, 0.2);
+}
+
+.chip-excluded {
+  opacity: 0.45;
+  text-decoration: line-through;
+  background: rgba(122, 143, 166, 0.08);
+  color: var(--text-secondary);
+  border-color: rgba(122, 143, 166, 0.15);
+}
+
+/* Botón ícono lápiz (modificar ingredientes) */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition);
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.icon-btn:hover {
+  color: var(--accent-sky);
+  border-color: var(--accent-sky);
+  background: rgba(77, 150, 255, 0.08);
+}
+
+.icon-btn-active {
+  color: var(--accent-sky);
+  border-color: var(--accent-sky);
+  background: rgba(77, 150, 255, 0.1);
+}
+
 .section-divider {
   border: none;
   border-top: 1px dashed var(--border-color);
@@ -483,4 +610,114 @@ li strong {
   padding: 2rem;
   color: var(--text-secondary);
   font-weight: 500;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  border-top: 1px solid var(--border-color);
+  margin-top: auto;
+}
+
+.footer-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.footer-brand {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.footer-copy {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.footer-right {
+  display: flex;
+  align-items: center;
+}
+
+.footer-help-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  padding: 0.4rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+
+.footer-help-btn:hover {
+  color: var(--color-primary);
+}
+
+.footer-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.footer-modal {
+  background: var(--color-surface);
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 540px;
+  width: 100%;
+  position: relative;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.footer-modal h2 {
+  margin-bottom: 1.25rem;
+}
+
+.footer-modal h3 {
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.footer-modal p, .footer-modal li {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+}
+
+.footer-modal ul {
+  padding-left: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 0.5rem 0;
+}
+
+.footer-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  padding: 0.25rem;
+  border-radius: 6px;
+}
+
+.footer-modal-close:hover {
+  color: var(--color-primary);
 }

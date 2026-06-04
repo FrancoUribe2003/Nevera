@@ -45,16 +45,21 @@ def generar_plan(request: PlanRequest):
     Necesito que me armes un plan de comidas para {request.personas} personas durante {request.dias} días.
     
     Tengo los siguientes ingredientes en casa: {ingredientes_str}.
-    
-    TU TAREA PRINCIPAL: Debes generar AL MENOS 3 OPCIONES DISTINTAS de platillos, sin importar si los días a planificar son menos. Siempre debe haber variedad en la respuesta (mínimo 3 recetas en la lista "plan").
-    
+        
     REGLAS ESTRICTAS:
     1. Las recetas deben ser variadas e ingeniosas, pueden ser de cualquier cocina del mundo (italiana, asiática, mediterránea, latinoamericana, etc.).
     2. Prioriza el uso de los ingredientes que ya tengo.
     3. Nunca repitas la misma proteína principal en días consecutivos.
-    4. Del total de recetas, aproximadamente LA MITAD deben ser opciones económicas (pocos ingredientes faltantes, ingredientes accesibles) y LA OTRA MITAD pueden ser recetas más elaboradas sin priorizar el costo.
-    5. Agrega un campo "economica": true/false en cada receta para indicar si es una opción económica o no.
-    6. Devuelve ÚNICAMENTE un objeto JSON válido, sin ningún texto antes ni después.
+    4. Cada ingrediente debe incluir una cantidad aproximada multiplicada por {request.personas} personas (ej: si son 2 personas y la base es 200g de carne, escribí "400g de carne picada"). Siempre calculá las cantidades para {request.personas} personas, nunca para 1.    5. Del total de recetas, aproximadamente LA MITAD deben ser opciones económicas (pocos ingredientes faltantes, ingredientes accesibles) y LA OTRA MITAD pueden ser recetas más elaboradas sin priorizar el costo.
+    6. Agrega un campo "economica": true/false en cada receta para indicar si es una opción económica o no.
+    7. Devuelve ÚNICAMENTE un objeto JSON válido, sin ningún texto antes ni después.
+    
+    REGLAS PARA LOS PASOS:
+    - Cada receta debe tener entre 6 y 10 pasos detallados.
+    - Cada paso debe ser una oración completa y clara, explicando exactamente qué hacer, cómo hacerlo y por cuánto tiempo si aplica.
+    - Incluí detalles como temperatura, textura esperada, técnica de cocción y tiempos específicos.
+    - Ejemplo de paso malo: "Cocinar el pollo".
+    - Ejemplo de paso bueno: "Colocar el pollo en la sartén con aceite caliente a fuego medio-alto y sellarlo durante 4 minutos por cada lado hasta que esté dorado por fuera."
     
     La estructura exacta del JSON debe ser esta:
     {{
@@ -65,12 +70,16 @@ def generar_plan(request: PlanRequest):
           "economica": true,
           "ingredientes_usados": ["ingrediente1", "ingrediente2"],
           "ingredientes_faltantes": ["ingrediente3"],
-          "pasos": ["Paso 1", "Paso 2"],
+          "pasos": [
+            "Paso detallado 1 con técnica, tiempo y resultado esperado.",
+            "Paso detallado 2 con técnica, tiempo y resultado esperado."
+          ],
           "tiempo_minutos": 45
         }}
       ]
     }}
     """
+
     try:
         chat_completion = cliente_groq.chat.completions.create(
             messages=[
@@ -93,17 +102,24 @@ def generar_lista_compras(request: ComprasRequest):
     comidas_str = ", ".join(request.comidas)
     
     prompt = f"""
-    Eres un chef experto. 
+    Eres un chef experto con conocimiento de gastronomía argentina e internacional.
     El usuario quiere preparar EXACTAMENTE estas comidas: {comidas_str}.
     
     TU TAREA:
     NO inventes ni recomiendes ninguna comida adicional. Analiza ÚNICAMENTE las comidas que el usuario proporcionó.
-    Para cada comida, lista los ingredientes necesarios para hacerla, estima el tiempo de preparación y describe los pasos para cocinarla.
-    No compares con lo que el usuario tenga en casa ni indiques qué le falta comprar.
+    Para cada comida, lista los ingredientes con cantidades aproximadas para UNA persona, estima el tiempo de preparación y describe los pasos detallados para cocinarla.
     
     REGLAS ESTRICTAS:
     1. Devuelve ÚNICAMENTE un objeto JSON válido, sin ningún texto antes ni después, ni bloques de markdown.
-    2. Usa palabras habituales de la gastronomía de Argentina.
+    2. Usa palabras habituales de la gastronomía argentina.
+    3. Cada ingrediente debe incluir una cantidad aproximada para 1 persona (ej: "200g de carne picada", "2 huevos", "1 taza de arroz").
+    
+    REGLAS PARA LOS PASOS:
+    - Cada receta debe tener entre 6 y 10 pasos detallados.
+    - Cada paso debe ser una oración completa y clara, explicando exactamente qué hacer, cómo hacerlo y por cuánto tiempo si aplica.
+    - Incluí detalles como temperatura, textura esperada, técnica de cocción y tiempos específicos.
+    - Ejemplo de paso malo: "Cocinar la carne".
+    - Ejemplo de paso bueno: "Colocar la carne picada en la sartén con un chorrito de aceite a fuego medio-alto y cocinarla durante 5 minutos, rompiéndola con una cuchara de madera hasta que pierda el color rosado."
     
     La estructura exacta del JSON debe ser esta:
     {{
@@ -111,8 +127,11 @@ def generar_lista_compras(request: ComprasRequest):
         {{
           "nombre": "Nombre exacto de la comida solicitada",
           "tiempo_minutos": 45,
-          "ingredientes": ["ingrediente1", "ingrediente2"],
-          "pasos": ["Paso 1...", "Paso 2..."]
+          "ingredientes": ["200g de ingrediente1", "2 unidades de ingrediente2"],
+          "pasos": [
+            "Paso detallado 1 con técnica, tiempo y resultado esperado.",
+            "Paso detallado 2 con técnica, tiempo y resultado esperado."
+          ]
         }}
       ]
     }}
