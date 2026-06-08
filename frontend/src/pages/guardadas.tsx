@@ -5,36 +5,71 @@ export default function Guardadas() {
 
   if (recetasGuardadas.length === 0) {
     return (
-      <div style={{ maxWidth: '800px', margin: '2rem auto', textAlign: 'center', fontFamily: 'sans-serif' }}>
-        <h2>Mis recetas guardadas 📖</h2>
-        <p>Aún no tienes recetas guardadas.</p>
-        <p>Ve a buscar nuevas ideas y guárdalas para que aparezcan aquí.</p>
+      <div style={{ textAlign: 'center', padding: '3rem 0' }}>
+        <h2>Mis recetas guardadas</h2>
+        <p style={{ marginTop: '1rem' }}>Aún no tienes recetas guardadas.</p>
+        <p style={{ marginTop: '0.5rem' }}>Ve a buscar nuevas ideas y guárdalas para que aparezcan aquí.</p>
       </div>
     );
   }
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', fontFamily: 'sans-serif' }}>
-      <h1>Mis recetas guardadas ({recetasGuardadas.length}) 📖</h1>
-      <p style={{ marginBottom: '2rem', color: '#666' }}>Estas recetas están guardadas en tu navegador y no se borrarán al cerrar la página.</p>
+    <div>
+      <h1>Mis recetas guardadas ({recetasGuardadas.length})</h1>
+      <p style={{ marginBottom: '2rem' }}>
+        Estas recetas están guardadas en tu navegador y no se borrarán al cerrar la página.
+      </p>
       
       {recetasGuardadas.map((receta, index) => (
-        <div key={index} style={{ border: '1px solid #ddd', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem', position: 'relative' }}>
-          {receta.economica && (
-            <span style={{ position: 'absolute', top: 10, right: 10, background: '#4CAF50', color: 'white', padding: '2px 8px', borderRadius: '12px', fontSize: '12px' }}>Económica</span>
-          )}
-          
-          <h3 style={{ marginTop: 0 }}>{receta.nombre} ⏱️ {receta.tiempo_minutos} min</h3>
-          
-          <button 
+        <div key={index} className="card" style={{ position: 'relative' }}>
+
+          {/* Botón eliminar — esquina superior derecha */}
+          <button
             onClick={() => eliminarReceta(receta.nombre)}
-            style={{ marginBottom: '1rem', padding: '0.4rem 0.8rem', background: '#f44336', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+            className="recipe-save-btn saved"
+            title="Eliminar receta"
           >
-            🗑️ Eliminar
+            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="3 6 5 6 21 6"/>
+              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+              <path d="M10 11v6"/><path d="M14 11v6"/>
+              <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+            </svg>
           </button>
 
-          <p><strong>Usa:</strong> {receta.ingredientes_usados.join(', ')}</p>
-          {receta.ingredientes_faltantes.length > 0 && <p><strong>Falta comprar:</strong> {receta.ingredientes_faltantes.join(', ')}</p>}
+          {receta.economica && (
+            <span className="badge badge-mint" style={{ position: 'absolute', top: '1.25rem', right: '3.25rem' }}>Económica</span>
+          )}
+
+          <div className="recipe-header">
+            <h3 className="recipe-title">
+              {receta.nombre}
+              <span className="recipe-meta-text"> · {receta.tiempo_minutos} min</span>
+            </h3>
+          </div>
+
+          <div className="ingredient-section">
+            <span className="ingredient-label">
+              {receta.ingredientes_faltantes.length === 0 ? 'Ingredientes:' : 'Usa:'}
+            </span>
+            <div className="ingredient-chips">
+              {receta.ingredientes_usados.map((ing, i) => (
+                <span key={i} className="ingredient-chip chip-green">{ing}</span>
+              ))}
+            </div>
+          </div>
+
+          {receta.ingredientes_faltantes.length > 0 && (
+            <div className="ingredient-section" style={{ marginBottom: '1rem' }}>
+              <span className="ingredient-label">Falta comprar:</span>
+              <div className="ingredient-chips">
+                {receta.ingredientes_faltantes.map((ing, i) => (
+                  <span key={i} className="ingredient-chip chip-coral">{ing}</span>
+                ))}
+              </div>
+            </div>
+          )}
+
           <h4>Pasos:</h4>
           <ol>{receta.pasos.map((paso, i) => <li key={i}>{paso}</li>)}</ol>
         </div>
