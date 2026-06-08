@@ -15,7 +15,7 @@ export default function Guardadas() {
 
   return (
     <div>
-      <h1>Mis recetas guardadas ({recetasGuardadas.length})</h1>
+      <h1>Recetas guardadas ({recetasGuardadas.length})</h1>
       <p style={{ marginBottom: '2rem' }}>
         Estas recetas están guardadas en tu navegador y no se borrarán al cerrar la página.
       </p>
