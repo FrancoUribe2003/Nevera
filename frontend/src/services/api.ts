@@ -1,6 +1,6 @@
 import type { PlanRequest, PlanResponse, ComprasRequest, ComprasResponse, ModificarRecetaRequest, Receta } from '../types/plan';
 
-const API_URL = 'http://localhost:8000'; 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 export const generarPlan = async (request: PlanRequest): Promise<PlanResponse> => {
   const response = await fetch(`${API_URL}/generar-plan`, {
