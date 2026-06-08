@@ -186,6 +186,14 @@ export default function Home({ modo }: { modo: 'PLAN' | 'RECETA' }) {
             return (
               <div key={index} className="card" style={{ position: 'relative' }}>
 
+                  {receta.imagen && (
+                    <img
+                      src={receta.imagen}
+                      alt={receta.nombre}
+                      className="recipe-img"
+                    />
+                  )}
+
                 {/* Botón guardar — esquina superior derecha */}
                 <button
                   onClick={() => isSaved ? eliminarReceta(receta.nombre) : guardarReceta(receta)}

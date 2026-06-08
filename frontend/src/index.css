@@ -721,3 +721,12 @@ li strong {
 .footer-modal-close:hover {
   color: var(--color-primary);
 }
+
+.recipe-img {
+  width: calc(100% + 2 * var(--card-padding, 1.5rem));
+  margin: calc(-1 * var(--card-padding, 1.5rem)) calc(-1 * var(--card-padding, 1.5rem)) 1rem;
+  height: 160px;
+  object-fit: cover;
+  border-radius: var(--card-radius, 12px) var(--card-radius, 12px) 0 0;
+  display: block;
+}

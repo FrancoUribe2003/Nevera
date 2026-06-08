@@ -12,6 +12,7 @@ export interface Receta {
   ingredientes_faltantes: string[];
   pasos: string[];
   tiempo_minutos: number;
+  imagen?: string;
 }
 
 export interface PlanResponse {

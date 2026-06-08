@@ -2,12 +2,11 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 from typing import List
 import json
+import httpx
+import os
 from groq import Groq
 
-# Creamos el router en lugar de inicializar FastAPI
 router = APIRouter()
-
-# El cliente_groq se inicializa aquí que es donde se usa
 cliente_groq = Groq()
 
 # --- MODELOS DE PYDANTIC ---
@@ -33,7 +32,32 @@ class RecetaCompleta(BaseModel):
 
 class ModificarRecetaRequest(BaseModel):
     receta: RecetaCompleta
-    ingredientes_a_reemplazar: List[str]  # <-- Ahora es una lista
+    ingredientes_a_reemplazar: List[str]
+
+# --- FUNCIÓN HELPER SPOONACULAR ---
+def buscar_imagen_plato(nombre_en: str) -> str:
+    """Busca imagen del plato en Spoonacular usando el nombre en inglés."""
+    try:
+        api_key = os.getenv("SPOONACULAR_API_KEY")
+        if not api_key:
+            return ""
+        response = httpx.get(
+            "https://api.spoonacular.com/recipes/search",
+            params={
+                "query": nombre_en,
+                "number": 1,
+                "apiKey": api_key
+            },
+            timeout=5
+        )
+        data = response.json()
+        resultados = data.get("results", [])
+        if resultados:
+            base_url = data.get("baseUri", "https://spoonacular.com/recipeImages/")
+            return base_url + resultados[0]["image"]
+        return ""
+    except Exception:
+        return ""
 
 # --- ENDPOINTS ---
 @router.post("/generar-plan")
@@ -50,9 +74,12 @@ def generar_plan(request: PlanRequest):
     1. Las recetas deben ser variadas e ingeniosas, pueden ser de cualquier cocina del mundo (italiana, asiática, mediterránea, latinoamericana, etc.).
     2. Prioriza el uso de los ingredientes que ya tengo.
     3. Nunca repitas la misma proteína principal en días consecutivos.
-    4. Cada ingrediente debe incluir una cantidad aproximada multiplicada por {request.personas} personas (ej: si son 2 personas y la base es 200g de carne, escribí "400g de carne picada"). Siempre calculá las cantidades para {request.personas} personas, nunca para 1.    5. Del total de recetas, aproximadamente LA MITAD deben ser opciones económicas (pocos ingredientes faltantes, ingredientes accesibles) y LA OTRA MITAD pueden ser recetas más elaboradas sin priorizar el costo.
+    4. Cada ingrediente debe incluir una cantidad aproximada multiplicada por {request.personas} personas (ej: si son 2 personas y la base es 200g de carne, escribí "400g de carne picada"). Siempre calculá las cantidades para {request.personas} personas, nunca para 1.
+    5. Del total de recetas, aproximadamente LA MITAD deben ser opciones económicas (pocos ingredientes faltantes, ingredientes accesibles) y LA OTRA MITAD pueden ser recetas más elaboradas sin priorizar el costo.
     6. Agrega un campo "economica": true/false en cada receta para indicar si es una opción económica o no.
-    7. Devuelve ÚNICAMENTE un objeto JSON válido, sin ningún texto antes ni después.
+    7. Agrega un campo "nombre_en" con el nombre del plato traducido al inglés de forma simple y genérica, priorizando términos comunes de búsqueda (ej: en vez de "Creamy Garlic Chicken Thighs" escribí "garlic chicken").
+    8. Devuelve ÚNICAMENTE un objeto JSON válido, sin ningún texto antes ni después.
+    
     
     REGLAS PARA LOS PASOS:
     - Cada receta debe tener entre 6 y 10 pasos detallados.
@@ -67,6 +94,7 @@ def generar_plan(request: PlanRequest):
         {{
           "dia": "Día 1",
           "nombre": "Nombre del plato",
+          "nombre_en": "Dish name in English",
           "economica": true,
           "ingredientes_usados": ["ingrediente1", "ingrediente2"],
           "ingredientes_faltantes": ["ingrediente3"],
@@ -91,7 +119,15 @@ def generar_plan(request: PlanRequest):
             response_format={"type": "json_object"}
         )
         respuesta_texto = chat_completion.choices[0].message.content
-        return json.loads(respuesta_texto)
+        plan_data = json.loads(respuesta_texto)
+
+        # Agregar imagen a cada receta usando nombre_en
+        for receta in plan_data["plan"]:
+            nombre_en = receta.get("nombre_en", receta["nombre"])
+            receta["imagen"] = buscar_imagen_plato(nombre_en)
+
+        return plan_data
+
     except json.JSONDecodeError:
         raise HTTPException(status_code=500, detail="Error 500: El modelo no devolvió un formato JSON válido.")
     except Exception as e:
@@ -144,10 +180,9 @@ def generar_lista_compras(request: ComprasRequest):
                 {"role": "user", "content": prompt}
             ],
             model="llama-3.3-70b-versatile",
-            temperature=0.3, # Bajamos un poco la temperatura para que sea más preciso y menos creativo
+            temperature=0.3,
             response_format={"type": "json_object"}
         )
-
         respuesta_texto = chat_completion.choices[0].message.content
         return json.loads(respuesta_texto)
 
@@ -174,13 +209,15 @@ def generar_sorpresa(request: SorpresaRequest):
     REGLAS ESTRICTAS:
     1. Debe ser exactamente 1 sola comida.
     2. Agrega un campo "economica": true/false para indicar si requiere comprar cosas caras o no.
-    3. Devuelve ÚNICAMENTE un objeto JSON válido, sin ningún texto antes ni después.
+    3. Agrega un campo "nombre_en" con el nombre del plato traducido al inglés, solo para uso interno.
+    4. Devuelve ÚNICAMENTE un objeto JSON válido, sin ningún texto antes ni después.
     
     La estructura exacta del JSON debe ser esta:
     {{
       "plan": [
         {{
           "nombre": "Nombre del plato creativo",
+          "nombre_en": "Creative dish name in English",
           "economica": true,
           "ingredientes_usados": ["ingrediente1", "ingrediente2"],
           "ingredientes_faltantes": ["ingrediente extra si hace falta"],
@@ -201,7 +238,15 @@ def generar_sorpresa(request: SorpresaRequest):
             response_format={"type": "json_object"}
         )
         respuesta_texto = chat_completion.choices[0].message.content
-        return json.loads(respuesta_texto)
+        sorpresa_data = json.loads(respuesta_texto)
+
+        # Agregar imagen
+        for receta in sorpresa_data["plan"]:
+            nombre_en = receta.get("nombre_en", receta["nombre"])
+            receta["imagen"] = buscar_imagen_plato(nombre_en)
+
+        return sorpresa_data
+
     except json.JSONDecodeError:
         raise HTTPException(status_code=500, detail="Error 500: El modelo no devolvió un formato JSON válido.")
     except Exception as e:
@@ -231,10 +276,9 @@ def modificar_receta(request: ModificarRecetaRequest):
                 {"role": "user", "content": prompt}
             ],
             model="llama-3.3-70b-versatile",
-            temperature=0.3, # Baja temperatura para que se ciña a modificar la receta sin cambiarla por completo
+            temperature=0.3,
             response_format={"type": "json_object"}
         )
-
         respuesta_texto = chat_completion.choices[0].message.content
         return json.loads(respuesta_texto)
 
