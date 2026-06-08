@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import Home from './pages/home';
 import Guardadas from './pages/guardadas';
-import Navbar from './components/navBar';
-import Footer from './components/footer'
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
 type View = 'HOME' | 'GUARDADAS';
 type Modo = 'PLAN' | 'RECETA';
